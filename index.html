@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Query Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-8 font-sans">
+  <div class="w-full max-w-7xl mx-auto">
+    <h1 class="text-gray-700 text-center mb-8 w-full text-2xl font-bold">SQL Query Generator</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+      <!-- Form Panel -->
+      <div class="bg-white p-6 rounded-lg shadow-sm flex flex-col h-full">
+        <h2 class="text-gray-600 text-lg font-bold mb-4 text-center">Query Parameters</h2>
+        <form class="flex-1 space-y-4 overflow-y-auto">
+          <!-- Distinct Checkbox -->
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" id="distinct"
+              class="w-4 h-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+            <label for="distinct" class="text-gray-700">Distinct</label>
+          </div>
+
+          <!-- Operation -->
+          <div class="space-y-1">
+            <label for="operation" class="block text-sm font-medium text-gray-700">Operation</label>
+            <select id="operation"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+              <option value="SELECT">SELECT</option>
+              <option value="INSERT">INSERT</option>
+              <option value="UPDATE">UPDATE</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+          </div>
+
+          <!-- Table -->
+          <div class="space-y-1">
+            <label for="table" class="block text-sm font-medium text-gray-700">Table</label>
+            <input type="text" id="table"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Column -->
+          <div class="space-y-1">
+            <label for="column" class="block text-sm font-medium text-gray-700">Column</label>
+            <input type="text" id="column"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Join Type -->
+          <div class="space-y-1">
+            <label for="joinType" class="block text-sm font-medium text-gray-700">Join Type</label>
+            <select id="joinType"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+              <option value="">None</option>
+              <option value="INNER">INNER JOIN</option>
+              <option value="LEFT">LEFT JOIN</option>
+              <option value="RIGHT">RIGHT JOIN</option>
+              <option value="FULL">FULL JOIN</option>
+            </select>
+          </div>
+
+          <!-- Join Table -->
+          <div class="space-y-1">
+            <label for="joinTable" class="block text-sm font-medium text-gray-700">Join Table</label>
+            <input type="text" id="joinTable"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Join Condition -->
+          <div class="space-y-1">
+            <label for="joinCondition" class="block text-sm font-medium text-gray-700">Join Condition</label>
+            <input type="text" id="joinCondition"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Where -->
+          <div class="space-y-1">
+            <label for="where" class="block text-sm font-medium text-gray-700">Where</label>
+            <input type="text" id="where"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Group By -->
+          <div class="space-y-1">
+            <label for="groupBy" class="block text-sm font-medium text-gray-700">Group By</label>
+            <input type="text" id="groupBy"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Order By -->
+          <div class="space-y-1">
+            <label for="orderBy" class="block text-sm font-medium text-gray-700">Order By</label>
+            <input type="text" id="orderBy"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Having -->
+          <div class="space-y-1">
+            <label for="having" class="block text-sm font-medium text-gray-700">Having</label>
+            <input type="text" id="having"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Limit -->
+          <div class="space-y-1">
+            <label for="limit" class="block text-sm font-medium text-gray-700">Limit</label>
+            <input type="number" id="limit"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <!-- Offset -->
+          <div class="space-y-1">
+            <label for="offset" class="block text-sm font-medium text-gray-700">Offset</label>
+            <input type="number" id="offset"
+              class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </form>
+
+        <div class="flex justify-center pt-4">
+          <button id="generateBtn"
+            class="bg-blue-500 text-white px-6 py-3 rounded min-w-[150px] font-medium hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0.5 transition-all">
+            Generate Query
+          </button>
+        </div>
+      </div>
+
+      <!-- Output Panel -->
+      <div class="bg-white p-6 rounded-lg shadow-sm flex flex-col h-full">
+        <h2 class="text-gray-600 text-lg font-bold mb-4 text-center">Generated SQL Query:</h2>
+        <div class="flex-1 min-h-[400px] mb-4 relative">
+          <textarea id="output"
+            class="w-full h-full p-4 border border-gray-200 rounded font-mono resize-y absolute inset-0" readonly
+            placeholder="Generated query will appear here..."></textarea>
+        </div>
+        <div class="flex justify-center py-4 gap-4">
+          <button id="clearBtn"
+            class="bg-green-500 text-white px-6 py-3 rounded min-w-[150px] font-medium hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0.5 transition-all">
+            Clear All
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    class SQLQueryGenerator {
+      constructor() {
+        this.query = "";
+        this.params = [];
+        this.indentation = '    ';
+        this.newLine = '\n';
+      }
+
+      formatList(items, separator = ',', newLine = true) {
+        if (!items || items.length === 0) return '';
+        const itemList = items.map(item => item.trim());
+        if (newLine) {
+          return itemList.join(separator + this.newLine + this.indentation);
+        }
+        return itemList.join(separator + ' ');
+      }
+
+      handleAggregations(aggregations) {
+        if (!aggregations) return [];
+        return aggregations.map(agg => {
+          const { function: func, field, alias } = agg;
+          return `${func}(${field})${alias ? ` AS ${alias}` : ''}`;
+        });
+      }
+
+      handleCase(caseStmt) {
+        let result = 'CASE';
+        if (caseStmt.expression) {
+          result += ' ' + caseStmt.expression;
+        }
+        caseStmt.when.forEach(whenClause => {
+          result += `\n${this.indentation}WHEN ${whenClause.condition} THEN ${whenClause.result}`;
+        });
+        if (caseStmt.else) {
+          result += `\n${this.indentation}ELSE ${caseStmt.else}`;
+        }
+        result += '\nEND';
+        if (caseStmt.alias) {
+          result += ` AS ${caseStmt.alias}`;
+        }
+        return result;
+      }
+
+      handleWindow(window) {
+        let result = '';
+        if (window.function) {
+          result += `${window.function} OVER (`;
+          if (window.partition_by) {
+            result += `PARTITION BY ${Array.isArray(window.partition_by) ?
+              window.partition_by.join(', ') : window.partition_by} `;
+          }
+          if (window.order_by) {
+            result += `ORDER BY ${Array.isArray(window.order_by) ?
+              window.order_by.join(', ') : window.order_by}`;
+          }
+          result += ')';
+          if (window.alias) {
+            result += ` AS ${window.alias}`;
+          }
+        }
+        return result;
+      }
+
+      generateSelect(requirements) {
+        let query = 'SELECT';
+        if (requirements?.distinct) {
+          query += ' DISTINCT';
+        }
+        query += this.newLine + this.indentation;
+
+        // Handle columns, aggregations, case statements, and window functions
+        let columns = requirements?.columns || ['*'];
+        if (requirements?.aggregations) {
+          columns = columns.concat(this.handleAggregations(requirements?.aggregations));
+        }
+        if (requirements?.case) {
+          columns = columns.concat(requirements?.case.map(c => this.handleCase(c)));
+        }
+        if (requirements?.window) {
+          columns = columns.concat(requirements?.window.map(w => this.handleWindow(w)));
+        }
+
+        query += this.formatList(columns);
+        query += this.newLine + 'FROM' + this.newLine + this.indentation + requirements?.table;
+
+        // Joins
+        if (requirements?.joins) {
+          query += this.newLine;
+          requirements?.joins.forEach(join => {
+            const joinType = join.type?.toUpperCase() || 'INNER';
+            query += `${joinType} JOIN ${join.table}${this.newLine}`;
+            query += this.indentation + `ON ${join.condition}${this.newLine}`;
+          });
+        }
+
+        // Where clause
+        if (requirements?.where) {
+          query += this.newLine + 'WHERE' + this.newLine + this.indentation;
+          if (typeof requirements?.where === 'string') {
+            query += requirements?.where;
+          } else if (Array.isArray(requirements?.where)) {
+            query += this.formatList(requirements?.where, ' AND');
+          }
+        }
+
+        // Group by
+        if (requirements?.group_by) {
+          query += this.newLine + 'GROUP BY' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.group_by);
+        }
+
+        // Having
+        if (requirements?.having) {
+          query += this.newLine + 'HAVING' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.having, ' AND');
+        }
+
+        // Order by
+        if (requirements?.order_by) {
+          query += this.newLine + 'ORDER BY' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.order_by);
+        }
+
+        // Limit & Offset
+        if (requirements?.limit) {
+          query += this.newLine + `LIMIT ${requirements?.limit}`;
+          if (requirements?.offset) {
+            query += this.newLine + `OFFSET ${requirements?.offset}`;
+          }
+        }
+
+        return query;
+      }
+
+      generateInsert(requirements) {
+        let query = `INSERT ${requirements?.ignore ? 'IGNORE ' : ''}INTO ${requirements?.table}`;
+
+        // Columns
+        if (requirements?.columns) {
+          query += this.newLine + '(' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.columns);
+          query += this.newLine + ')';
+        }
+
+        // Values
+        if (requirements?.values) {
+          query += this.newLine + 'VALUES';
+          if (Array.isArray(requirements?.values[0])) {
+            // Multiple rows
+            query += requirements?.values.map(row => {
+              return this.newLine + '(' + this.newLine + this.indentation +
+                this.formatList(row) + this.newLine + ')';
+            }).join(',');
+          } else {
+            // Single row
+            query += this.newLine + '(' + this.newLine + this.indentation;
+            query += this.formatList(requirements?.values);
+            query += this.newLine + ')';
+          }
+        }
+
+        // On duplicate key update
+        if (requirements?.on_duplicate) {
+          query += this.newLine + 'ON DUPLICATE KEY UPDATE' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.on_duplicate);
+        }
+
+        return query;
+      }
+
+      generateUpdate(requirements) {
+        let query = `UPDATE ${requirements?.table}`;
+
+        // Joins for UPDATE
+        if (requirements?.joins) {
+          query += this.newLine;
+          requirements?.joins.forEach(join => {
+            const joinType = join.type?.toUpperCase() || 'INNER';
+            query += `${joinType} JOIN ${join.table}${this.newLine}`;
+            query += this.indentation + `ON ${join.condition}${this.newLine}`;
+          });
+        }
+
+        // Set clause
+        query += this.newLine + 'SET' + this.newLine + this.indentation;
+        query += this.formatList(requirements?.set);
+
+        // Where clause
+        if (requirements?.where) {
+          query += this.newLine + 'WHERE' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.where, ' AND');
+        }
+
+        // Order by and limit for MySQL
+        if (requirements?.order_by) {
+          query += this.newLine + 'ORDER BY' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.order_by);
+        }
+
+        if (requirements?.limit) {
+          query += this.newLine + `LIMIT ${requirements?.limit}`;
+        }
+
+        return query;
+      }
+
+      generateDelete(requirements) {
+        let query = 'DELETE';
+
+        // Multi-table delete
+        if (requirements?.tables) {
+          query += ' ' + requirements?.tables.join(', ');
+        }
+
+        query += this.newLine + 'FROM ' + requirements?.table;
+
+        // Joins for DELETE
+        if (requirements?.joins) {
+          query += this.newLine;
+          requirements?.joins.forEach(join => {
+            const joinType = join.type?.toUpperCase() || 'INNER';
+            query += `${joinType} JOIN ${join.table}${this.newLine}`;
+            query += this.indentation + `ON ${join.condition}${this.newLine}`;
+          });
+        }
+
+        // Where clause
+        if (requirements?.where) {
+          query += this.newLine + 'WHERE' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.where, ' AND');
+        }
+
+        // Order by and limit for MySQL
+        if (requirements?.order_by) {
+          query += this.newLine + 'ORDER BY' + this.newLine + this.indentation;
+          query += this.formatList(requirements?.order_by);
+        }
+
+        if (requirements?.limit) {
+          query += this.newLine + `LIMIT ${requirements?.limit}`;
+        }
+
+        return query;
+      }
+
+      generate(requirements) {
+        const operation = requirements?.operation?.toUpperCase();
+        switch (operation) {
+          case 'SELECT':
+            return this.generateSelect(requirements);
+          case 'INSERT':
+            return this.generateInsert(requirements);
+          case 'UPDATE':
+            return this.generateUpdate(requirements);
+          case 'DELETE':
+            return this.generateDelete(requirements);
+          default:
+            throw new Error(`Unsupported operation: ${operation}`);
+        }
+      }
+    }
+
+    // Sample requirements object
+    const sampleRequirements = {
+      operation: 'SELECT',
+      distinct: true,
+      columns: ['users.id', 'users.name', 'users.email'],
+      aggregations: [
+        { function: 'COUNT', field: '*', alias: 'total_count' },
+        { function: 'SUM', field: 'orders.amount', alias: 'total_amount' }
+      ],
+      case: [{
+        when: [
+          { condition: 'age >= 18', result: '"Adult"' },
+          { condition: 'age >= 13', result: '"Teenager"' }
+        ],
+        else: '"Child"',
+        alias: 'age_group'
+      }],
+      window: [{
+        function: 'ROW_NUMBER()',
+        partition_by: 'department_id',
+        order_by: 'salary DESC',
+        alias: 'salary_rank'
+      }],
+      table: 'users',
+      joins: [{
+        type: 'LEFT',
+        table: 'orders',
+        condition: 'users.id = orders.user_id'
+      }],
+      where: [
+        'users.status = "active"',
+        'orders.amount > 1000'
+      ],
+      group_by: ['users.id', 'users.name'],
+      having: ['COUNT(*) > 5'],
+      order_by: ['total_amount DESC'],
+      limit: 10,
+      offset: 0
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const generator = new SQLQueryGenerator();
+      const outputElement = document.getElementById('output');
+
+      // Generate Query Button Handler
+      document.getElementById('generateBtn').addEventListener('click', function () {
+        try {
+          // Gather all form inputs into a requirements object
+          const requirements = {
+            operation: document.getElementById('operation').value,
+            table: document.getElementById('table').value,
+            distinct: document.getElementById('distinct').checked,
+            columns: document.getElementById('column').value
+              ? document.getElementById('column').value.split(',').map(col => col.trim())
+              : ['*']
+          };
+
+          // Add join if specified
+          const joinType = document.getElementById('joinType').value;
+          const joinTable = document.getElementById('joinTable').value;
+          const joinCondition = document.getElementById('joinCondition').value;
+
+          if (joinType && joinTable && joinCondition) {
+            requirements.joins = [{
+              type: joinType,
+              table: joinTable,
+              condition: joinCondition
+            }];
+          }
+
+          // Add optional clauses if they exist
+          const where = document.getElementById('where').value;
+          if (where) {
+            requirements.where = where.split(',').map(item => item.trim());
+          }
+
+          const groupBy = document.getElementById('groupBy').value;
+          if (groupBy) {
+            requirements.group_by = groupBy.split(',').map(item => item.trim());
+          }
+
+          const orderBy = document.getElementById('orderBy').value;
+          if (orderBy) {
+            requirements.order_by = orderBy.split(',').map(item => item.trim());
+          }
+
+          const having = document.getElementById('having').value;
+          if (having) {
+            requirements.having = having.split(',').map(item => item.trim());
+          }
+
+          const limit = document.getElementById('limit').value;
+          if (limit) {
+            requirements.limit = parseInt(limit);
+          }
+
+          const offset = document.getElementById('offset').value;
+          if (offset) {
+            requirements.offset = parseInt(offset);
+          }
+
+          // Generate and display the query
+          const query = generator.generate(requirements);
+          outputElement.value = query;
+
+        } catch (error) {
+          console.log(error)
+          outputElement.value = `Error: ${error.message}`;
+        }
+      });
+
+      // Clear Button Handler
+      document.getElementById('clearBtn').addEventListener('click', function () {
+        // Clear all form inputs
+        document.getElementById('distinct').checked = false;
+        document.getElementById('operation').value = 'SELECT';
+        document.getElementById('table').value = '';
+        document.getElementById('column').value = '';
+        document.getElementById('joinType').value = '';
+        document.getElementById('joinTable').value = '';
+        document.getElementById('joinCondition').value = '';
+        document.getElementById('where').value = '';
+        document.getElementById('groupBy').value = '';
+        document.getElementById('orderBy').value = '';
+        document.getElementById('having').value = '';
+        document.getElementById('limit').value = '';
+        document.getElementById('offset').value = '';
+
+        // Clear output
+        outputElement.value = '';
+      });
+    });
+  </script>
+</body>
+
+</html>
